@@ -45,12 +45,29 @@ namespace MMO.Protocol
         }
 
 
+        public static void MP_SC_MATCH_RES_ECHO(Packet packet, long clientTimestamp)
+        {
+            BeginPacket(packet);
+            packet.WriteUInt16((ushort)PacketType.PACKET_SC_MATCH_RES_ECHO)
+                  .WriteInt64(clientTimestamp);
+            EndPacket(packet);
+        }
 
-
-        public static void WriteHeader(Packet packet, byte randKey, byte code = NetConfig.ServerPacketCode)
+        public static void BeginPacket(Packet packet)
         {
             NetHeader header = default;
-            header.Code = code;
+            header.Code = NetConfig.ServerPacketCode;
+            header.RandKey = (byte)Random.Shared.Next(0, 256);
+            Span<byte> headerBytes = stackalloc byte[NetHeader.Size];
+            header.WriteTo(headerBytes);
+            packet.PutData(headerBytes);
+        }
+
+        public static void EndPacket(Packet packet)
+        {
+            ushort len = (ushort)(packet.GetDataSize() - NetHeader.Size);
+            BinaryPrimitives.WriteUInt16LittleEndian(
+                packet.GetBuffer().AsSpan(NetHeader.LenOffset, sizeof(ushort)), len);
         }
     }
 }

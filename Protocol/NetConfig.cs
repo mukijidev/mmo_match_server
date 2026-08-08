@@ -20,5 +20,8 @@ namespace MMO.Protocol
         public const int PassLen = 20;
         public const int IpLen = 16;
         public const int SessionKeyLen = 64;
+
+        public const bool ConsoleSessionLog = true;
+
     }
 }

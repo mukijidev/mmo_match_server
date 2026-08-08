@@ -23,6 +23,9 @@ namespace MMO.Protocol
 
         PACKET_CS_GAME_REQ_SELECT_PLAYER = 1020,
         PACKET_SC_GAME_RES_SELECT_PLAYER = 1021,
+
+        PACKET_CS_MATCH_REQ_ECHO = 6901,   // int64 clientTimestamp
+        PACKET_SC_MATCH_RES_ECHO = 6902,
     }
 
 }

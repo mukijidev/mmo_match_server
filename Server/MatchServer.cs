@@ -13,12 +13,18 @@ namespace MMO.Server
 
         protected override void OnClientLeave(long sessionId)
         {
-            Console.WriteLine($"Leave sessionId = {sessionId}");
+            if(NetConfig.ConsoleSessionLog)
+            {
+                Console.WriteLine($"Leave sessionId = {sessionId}");
+            }
         }
 
         protected override void OnClientJoin(long sessionId, string ip, ushort port)
         {
-            Console.WriteLine($"Join sessionId = {sessionId}");
+            if(NetConfig.ConsoleSessionLog)
+            {
+                Console.WriteLine($"Join sessionId = {sessionId}");
+            }
         }
 
         protected override bool OnConnectionRequest()
@@ -44,7 +50,12 @@ namespace MMO.Server
                         break;
                     }
 
+                case PacketType.PACKET_CS_MATCH_REQ_ECHO:
+                    HandleEcho(sessionId, packet);
+                    break;
+
                 default:
+                    Console.WriteLine($"[RECV UNDEFINED packet type={type}, sessionId={sessionId}");
                     break;
             }
         }
@@ -72,5 +83,13 @@ namespace MMO.Server
                 + $"recvTps = {GetRecvMessageTps()} sendTps = {GetSendMessageTps()}");
         }
 
+        private void HandleEcho(long sessionId, Packet packet)
+        {
+            long clientTimeStamp = packet.ReadInt64();
+
+            Packet res = Packet.Alloc();
+            PacketMaker.MP_SC_MATCH_RES_ECHO(res, clientTimeStamp);
+            SendPacket(sessionId, res);
+        }
     }
 }
